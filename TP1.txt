@@ -1,1 +1,91 @@
 https://www.tinkercad.com/things/5gdR4YGQVH7-tp1/editel
+
+
+// C++ code
+//
+
+void setup()
+{
+  	int i = 0;
+  	for(i = 4; i < 14; i++){
+    	pinMode(i, OUTPUT);
+  	}
+  	pinMode(3, INPUT);
+  	pinMode(2, INPUT);
+  	Serial.begin(9600);
+}
+int i = 0;
+int encendido = 0;
+int pausa = 1;
+int segundosAnterior = 0;
+int segundos = 0;
+int contador = 0;
+int contadorAhora = 0;
+int valorPausa = 0;
+int valorReset = 0;
+int contadorBinario[10] = {0,0,0,0,0,0,0,0,0,0};
+int contadorDecimal(void);
+void convertirABinario(int);
+void controlCronometro(void);
+
+void loop()
+{
+  	if(digitalRead(2)){
+      	encendido = 1;
+      	pausa = pausa == 0 ? 1 : 0;
+    }
+      
+    if(encendido == 1 && pausa == 0){
+      	controlCronometro();
+  		contadorAhora = contadorDecimal();
+  		convertirABinario(contadorAhora);
+    }
+  	valorPausa = 0;
+  
+  	if(digitalRead(3)){
+    	segundos = 0;
+      	contador = 0;
+        contadorAhora = 0;
+      	segundosAnterior = 0;
+      	for(i = 0; i <= 10; i++){
+      		contadorBinario[i] = 0;
+        }
+    }
+    
+  	delay(300);
+}
+
+int contadorDecimal(){
+	segundos = millis()/1000;
+  
+  	if(segundos != segundosAnterior)
+  	{
+    	Serial.println(segundos);
+    	segundosAnterior = segundos;
+    	contador++;
+  	}
+  	return contador;
+}
+
+void convertirABinario(int numero){
+  	int i = 0, aux = 0;
+  
+	while(numero != 0){
+        aux = numero % 2 == 0 ? 0 : 1;
+      	contadorBinario[i] = aux;
+        numero /= 2;
+      	i++;
+    }	
+}
+
+void controlCronometro(){
+	
+  for(int i = 0; i <= 10; i++){
+      	if(contadorBinario[i] == 0){
+      		digitalWrite(i+4, 0);	
+        }
+      	else{
+          	digitalWrite(i+4, 1);
+      	}
+    }
+}
